@@ -8,8 +8,8 @@ These scripts are created to facilitate loggin hours in Jira/Tempo using the pyt
 
 ## Dependencies
 * Python
- * python-jira
- * python-configparser
+  * python-jira
+  * python-configparser
 * config.txt file in this directory containing the currencies you want to trade containing:
 ```
 [BASICAUTH]
