@@ -16,6 +16,7 @@
 JIRA_USER = <user>
 JIRA_PASS = <pass>
 JIRA_URL = <url>
+JIRA_ITEM = <key>
 ```
 
 ### How to install on Ubuntu
