@@ -1,7 +1,7 @@
-# krakentrader
+# Loggalicious
 
 ## Introduction
-
+These scripts are created to facilitate loggin hours in Jira/Tempo using the python-jira package.
 
 ## Technology used
 * Script: Python
