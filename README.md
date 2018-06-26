@@ -10,14 +10,18 @@ These scripts are created to facilitate loggin hours in Jira/Tempo using the pyt
 * Python
   * python-jira
   * python-configparser
-* config.txt file in this directory containing the currencies you want to trade containing:
+* config.txt file in this directory containing the following variables:
+
 ```
 [BASICAUTH]
 JIRA_USER = <user>
 JIRA_PASS = <pass>
 JIRA_URL = <url>
 JIRA_ITEM = <key>
+
 ```
+
+**For some reason the config.txt needs a white line on the bottom**
 
 ### How to install on Ubuntu
 ```
