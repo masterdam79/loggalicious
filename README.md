@@ -7,10 +7,17 @@ These scripts are created to facilitate logging hours in Jira/Tempo using the py
 * Script: Python
 
 ## Dependencies
-* Python
-  * python-jira
-  * python-configparser
-  * python-argparse
+### Linux packages
+* python
+* python-pip
+
+### PIP Install
+* jira
+* configparser
+* argparse
+* icalendar
+
+### Config file
 * config.txt file in this directory containing the following variables:
 
 ```
