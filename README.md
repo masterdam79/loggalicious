@@ -10,6 +10,7 @@ These scripts are created to facilitate logging hours in Jira/Tempo using the py
 * Python
   * python-jira
   * python-configparser
+  * python-argparse
 * config.txt file in this directory containing the following variables:
 
 ```
@@ -26,5 +27,5 @@ JIRA_ITEM = <key>
 ### How to install on Ubuntu
 ```
 sudo apt update
-sudo apt install python python-jira python-configparser
+sudo apt install python python-jira python-configparser python-argparse
 ```
