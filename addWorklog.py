@@ -16,7 +16,13 @@ jira = JIRA(basic_auth=(jira_user, jira_pass), options = {'server': jira_url})
 
 parser = argparse.ArgumentParser(description='Process some arguments.')
 
+# A JIRA item
 parser.add_argument('--jira_item', type=str)
+
+# :param started: Moment when the work is logged, based on REST Browser it needs: "2014-06-03T08:21:01.273+0000"
+parser.add_argument('--date', type=str)
+parser.add_argument('--description', type=str)
+parser.add_argument('--worked', type=str)
 
 args = parser.parse_args()
 
@@ -32,6 +38,4 @@ for arg in vars(args):
     else:
         exec(arg + " = argvalue")
 
-issue = jira.issue(jira_item)
-
-jira.add_worklog(issue, timeSpent='5h')
+jira.add_worklog(jira_item, timeSpent=worked)
