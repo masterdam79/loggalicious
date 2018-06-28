@@ -33,5 +33,4 @@ parser.add_argument('-w', '--worked', type=str, metavar='Time-Worked', required=
 
 args = parser.parse_args()
 
-
-jira.add_worklog(jira_item, timeSpent='2h')
+jira.add_worklog(args.jira_item, timeSpent=args.worked)
