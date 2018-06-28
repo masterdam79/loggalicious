@@ -48,8 +48,12 @@ for component in gcal.walk():
         meeting_date = dtstart.date() if isinstance(dtstart, datetime) else dtstart
         if (date_from <= meeting_date < date_to):
             try:
-                #pprint(component)
-                print component.get('summary')
+                # Put descriptive fields in variables
+                summary = component.get('summary')
+                description = component.get('description')
+                print(summary)
+                print(description)
+
                 # Date Time Start
                 dtstart = component.get('dtstart')
                 #print dtstart.to_ical()
@@ -65,8 +69,14 @@ for component in gcal.walk():
 
                 # Format date for parameter requirement
                 date = str(start)[:16]
+                print(date)
 
-                # Logic to see if component.get('summary') or component.get('description') contains a JIRA key
+                # Define regex to match JIRA keys
+                regexp = re.compile(r'[A-Z]?-[0-9]?')
+                if (regexp.search(summary) or regexp.search(description)):
+                    print '======matched======'
+
+                print('-------------------------')
 
 
             except:
