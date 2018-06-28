@@ -92,7 +92,7 @@ for component in gcal.walk():
                     print('======matched======')
 #                    python addWorklog.py --jira_item jira_key_summary --date date --worked duration.total_seconds() + "s" --description description
                 else:
-                    print('You\'re not needed go away!'')
+                    print('You\'re not needed go away!')
 
 
                 print('-------------------------')
