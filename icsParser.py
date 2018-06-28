@@ -8,6 +8,16 @@ import dateutil.parser
 from pprint import pprint
 import argparse
 import re
+from jira import JIRA
+import configparser
+
+
+# Get some variables outside this script
+config = configparser.ConfigParser()
+config.read('./config.txt')
+jira_user = config['BASICAUTH']['JIRA_USER']
+jira_pass = config['BASICAUTH']['JIRA_PASS']
+jira_url = config['BASICAUTH']['JIRA_URL']
 
 # Parse CLI arguments
 parser = argparse.ArgumentParser(description='Parse .ics file for calendar')
@@ -27,6 +37,19 @@ else:
 # See if from/to date is given as argument, else default value to today
 date_from = datetime.strptime(args.date_range[0], "%Y-%m-%d").date() if args.date_range is not None else date.today() # - timedelta(1)
 date_to = datetime.strptime(args.date_range[1], "%Y-%m-%d").date() if args.date_range is not None else date.today() + timedelta(1)
+
+def check_if_exists_jira(jira_item):
+    try:
+        jira = JIRA(basic_auth=(jira_user, jira_pass), options = {'server': jira_url})
+
+        issue = jira.issue(jira_item)
+
+        print(bcolors.UNDERLINE + issue.fields.project.key + bcolors.ENDC)
+        print(bcolors.UNDERLINE + issue.fields.issuetype.name + bcolors.ENDC)
+        print(bcolors.UNDERLINE + issue.fields.reporter.displayName + bcolors.ENDC)
+    except:
+        print(bcolors.FAIL + 'No valid JIRA key item' + bcolors.ENDC)
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -85,18 +108,20 @@ for component in gcal.walk():
 
                 if re.search(regex, summary):
                     print(bcolors.OKBLUE + 'Found a match in summary!' + bcolors.ENDC)
-                    jira_key_summary = re.search(regex, summary).group()
+                    jira_key_from_summary = re.search(regex, summary).group()
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
-                    print("KEYS: " + jira_key_summary)
+                    print("KEYS: " + jira_key_from_summary)
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
-#                    python addWorklog.py --jira_item jira_key_summary --date date --worked duration.total_seconds() + "s" --description description
+                    check_if_exists_jira(jira_key_from_summary)
+#                    python addWorklog.py --jira_item jira_key_from_summary --date date --worked duration.total_seconds() + "s" --description description
                 elif re.search(regex, description):
                     print(bcolors.OKBLUE + 'Found a match in description!' + bcolors.ENDC)
-                    jira_key_description = re.search(regex, description).group()
+                    jira_key_from_description = re.search(regex, description).group()
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
-                    print("KEYS: " + jira_key_description)
+                    print("KEYS: " + jira_key_from_description)
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
-#                    python addWorklog.py --jira_item jira_key_summary --date date --worked duration.total_seconds() + "s" --description description
+                    check_if_exists_jira(jira_key_from_description)
+#                    python addWorklog.py --jira_item jira_key_from_summary --date date --worked duration.total_seconds() + "s" --description description
                 else:
                     print(bcolors.FAIL + 'You\'re not needed go away!' + bcolors.ENDC)
 
