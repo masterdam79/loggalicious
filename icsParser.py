@@ -11,33 +11,19 @@ import re
 from jira import JIRA
 import configparser
 
-
-# Get some variables outside this script
+'''
+Get some variables outside this script
+'''
 config = configparser.ConfigParser()
 config.read('./config.txt')
 jira_user = config['BASICAUTH']['JIRA_USER']
 jira_pass = config['BASICAUTH']['JIRA_PASS']
 jira_url = config['BASICAUTH']['JIRA_URL']
 
-# Parse CLI arguments
-parser = argparse.ArgumentParser(description='Parse .ics file for calendar')
-parser.add_argument('-f', '--ics_path', type=str, metavar='Ics-File-Path', required=True, help="Path to .ics file")
-parser.add_argument('-d', '--date-range', nargs=2, metavar=('Start-Date','End-Date'),
-                   help='start date and end date in YYYY-MM-DD formating (default: %s, %s)' %(date.today() - timedelta(1), date.today() - timedelta(1)))
-
-args = parser.parse_args()
-
-# Make args required/optional
-if args.ics_path is not None:
-    ics_path = args.ics_path.strip()
-else:
-    print "No value given, exiting, try again.."
-    sys.exit(0)
-
-# See if from/to date is given as argument, else default value to today
-date_from = datetime.strptime(args.date_range[0], "%Y-%m-%d").date() if args.date_range is not None else date.today() # - timedelta(1)
-date_to = datetime.strptime(args.date_range[1], "%Y-%m-%d").date() if args.date_range is not None else date.today() + timedelta(1)
-
+'''
+Some functions and classes
+'''
+# Function to check if jira item exists
 def check_if_exists_jira(jira_item):
     try:
         jira = JIRA(basic_auth=(jira_user, jira_pass), options = {'server': jira_url})
@@ -50,7 +36,7 @@ def check_if_exists_jira(jira_item):
     except:
         print(bcolors.FAIL + 'No valid JIRA key item' + bcolors.ENDC)
 
-
+# Class to add some color to the output
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -61,15 +47,43 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+# Class to parse arguments and show help if no required arguments are given
+class MyParser(argparse.ArgumentParser):
+    def error(self, message):
+        sys.stderr.write('error: %s\n' % message)
+        self.print_help()
+        sys.exit(2)
+
+'''
+Initialize ze parser!!!
+'''
+parser = MyParser()
+
+'''
+Parse CLI arguments
+'''
+parser = argparse.ArgumentParser(description='Parse .ics file for calendar')
+parser.add_argument('-f', '--ics_path', type=str, metavar='Ics-File-Path', required=True, help="Path to .ics file")
+parser.add_argument('-d', '--date-range', nargs=2, metavar=('Start-Date','End-Date'), help='start date and end date in YYYY-MM-DD formating (default: %s, %s)' %(date.today() - timedelta(1), date.today() - timedelta(1)))
+args = parser.parse_args()
+
+# See if from/to date is given as argument, else default value to today
+date_from = datetime.strptime(args.date_range[0], "%Y-%m-%d").date() if args.date_range is not None else date.today() # - timedelta(1)
+date_to = datetime.strptime(args.date_range[1], "%Y-%m-%d").date() if args.date_range is not None else date.today() + timedelta(1)
+
 # Verbosity
-print("File path for .ics file: %s, Starting date: %s, Ending: %s" % (ics_path,date_from,date_to))
+print("File path for .ics file: %s, Starting date: %s, Ending: %s" % (args.ics_path,date_from,date_to))
 #exit()
 
-# Read file
-ics = open(ics_path,'rb')
+'''
+Read the ics file
+'''
+ics = open(args.ics_path,'rb')
 gcal = Calendar.from_ical(ics.read())
 
-# Iterate over calendar events
+'''
+Iterate over calendar events
+'''
 for component in gcal.walk():
 
     if component.name == "VEVENT":
@@ -132,4 +146,7 @@ for component in gcal.walk():
             except:
                 print("\n")
 
+'''
+Close the ics file
+'''
 ics.close()
