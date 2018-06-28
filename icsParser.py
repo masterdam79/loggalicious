@@ -16,20 +16,30 @@ parser.add_argument('-d', '--date-range', nargs=2, metavar=('Start-Date','End-Da
 
 args = parser.parse_args()
 
-# Make args requited/optional
+# Make args required/optional
 if args.ics_path is not None:
     ics_path = args.ics_path.strip()
 else:
     print "No value given, exiting, try again.."
     sys.exit(0)
-date_from = datetime.strptime(args.date_range[0], "%Y-%m-%d").date()  if args.date_range is not None else date.today() # - timedelta(1)
+
+# See if from/to date is given as argument, else default value to today
+date_from = datetime.strptime(args.date_range[0], "%Y-%m-%d").date() if args.date_range is not None else date.today() # - timedelta(1)
 date_to = datetime.strptime(args.date_range[1], "%Y-%m-%d").date() if args.date_range is not None else date.today() + timedelta(1)
 
+print(date_from)
+print(date_to)
+
+
+# Verbosity
 print("File path for .ics file: %s, Starting date: %s, Ending: %s" % (ics_path,date_from,date_to))
 #exit()
 
+# Read file
 ics = open(ics_path,'rb')
 gcal = Calendar.from_ical(ics.read())
+
+# Iterate over calendar events
 for component in gcal.walk():
 
     if component.name == "VEVENT":
@@ -51,7 +61,9 @@ for component in gcal.walk():
                 duration = end - start
 
                 print duration.total_seconds()
-                print(start)
+
+                # Format date for parameter requirement
+                date = str(start)[:16]
 
                 # Logic to see if component.get('summary') or component.get('description') contains a JIRA key
 

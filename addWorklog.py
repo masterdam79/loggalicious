@@ -30,7 +30,7 @@ parser = MyParser()
 # A JIRA item
 parser.add_argument('-i', '--jira_item', type=str, metavar='JIRA Key', required=True, help="The JIRA key you want to log hours on, like ABC-123")
 
-# :param started: Moment when the work is logged, based on REST Browser it needs: "2014-06-03T08:21:01.273+0000"
+# :param started: Moment when the work is logged, based on REST Browser it needs: "2014-06-03 08:21"
 parser.add_argument('-d', '--date', type=str, metavar='Date', required=True, help="Format: 2018-06-28 18:00")
 parser.add_argument('-n', '--description', type=str, metavar='Description', required=True, help="Fill in what you have done")
 parser.add_argument('-w', '--worked', type=str, metavar='Time-Worked', required=True, help="Time worked, format: 2h, 1d")
