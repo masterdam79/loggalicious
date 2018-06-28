@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2.7
 from icalendar import Calendar, Event
 from datetime import date, datetime, timedelta
 import dateutil.parser
@@ -10,6 +10,7 @@ import argparse
 import re
 from jira import JIRA
 import configparser
+from tzlocal import get_localzone
 
 '''
 Get some variables outside this script
@@ -24,17 +25,44 @@ jira_url = config['BASICAUTH']['JIRA_URL']
 Some functions and classes
 '''
 # Function to check if jira item exists
-def check_if_exists_jira(jira_item):
+def check_if_exists_jira_and_add_worklog(jira_item, date, duration, summary):
     try:
-        jira = JIRA(basic_auth=(jira_user, jira_pass), options = {'server': jira_url})
-
         issue = jira.issue(jira_item)
-
+        print(jira_item)
+        print(date)
+        print(duration)
+        print(summary)
         print(bcolors.UNDERLINE + issue.fields.project.key + bcolors.ENDC)
         print(bcolors.UNDERLINE + issue.fields.issuetype.name + bcolors.ENDC)
         print(bcolors.UNDERLINE + issue.fields.reporter.displayName + bcolors.ENDC)
+
+        try:
+            print("Trying to add worklog")
+            jira_add_worklog(jira_item, date, duration, summary)
+        except:
+            print(bcolors.FAIL + 'Was unable to add worklog' + bcolors.ENDC)
     except:
         print(bcolors.FAIL + 'No valid JIRA key item' + bcolors.ENDC)
+
+
+def jira_add_worklog(jira_item, date, duration, summary):
+    print("Inside add_worklog now")
+    datetime_type = datetime.strptime(date, '%Y-%m-%d %H:%M')
+    datetime_localized = tz.localize(datetime_type)
+    if ", " in str(duration):
+        print("Bigger than 1 day")
+        days,time = str(duration).split(', ')
+        days_int,days_str = str(days).split(' ')
+        print(days_int)
+        hours,minutes,seconds = str(time).split(':')
+        duration_jira_readable = days_int + "d " + hours + "h " + minutes + "m"
+    else:
+        hours,minutes,seconds = str(duration).split(':')
+        duration_jira_readable = hours + "h " + minutes + "m"
+
+    print(duration_jira_readable)
+    # https://jira.readthedocs.io/en/master/api.html#jira.JIRA.add_worklog
+    jira.add_worklog(jira_item, timeSpent=duration_jira_readable, started=datetime_localized, comment=summary)
 
 # Class to add some color to the output
 class bcolors:
@@ -55,9 +83,11 @@ class MyParser(argparse.ArgumentParser):
         sys.exit(2)
 
 '''
-Initialize ze parser!!!
+Initialize!!!
 '''
 parser = MyParser()
+tz = get_localzone()
+jira = JIRA(basic_auth=(jira_user, jira_pass), options = {'server': jira_url})
 
 '''
 Parse CLI arguments
@@ -126,7 +156,7 @@ for component in gcal.walk():
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
                     print("KEYS: " + jira_key_from_summary)
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
-                    check_if_exists_jira(jira_key_from_summary)
+                    check_if_exists_jira_and_add_worklog(jira_key_from_summary, date, duration, summary)
 #                    python addWorklog.py --jira_item jira_key_from_summary --date date --worked duration.total_seconds() + "s" --description description
                 elif re.search(regex, description):
                     print(bcolors.OKBLUE + 'Found a match in description!' + bcolors.ENDC)
@@ -134,7 +164,7 @@ for component in gcal.walk():
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
                     print("KEYS: " + jira_key_from_description)
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
-                    check_if_exists_jira(jira_key_from_description)
+                    check_if_exists_jira_and_add_worklog(jira_key_from_description, date, duration, summary)
 #                    python addWorklog.py --jira_item jira_key_from_summary --date date --worked duration.total_seconds() + "s" --description description
                 else:
                     print(bcolors.FAIL + 'You\'re not needed go away!' + bcolors.ENDC)
