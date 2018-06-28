@@ -10,6 +10,7 @@ import argparse
 import re
 from jira import JIRA
 import configparser
+from tzlocal import get_localzone
 
 '''
 Get some variables outside this script
@@ -55,9 +56,10 @@ class MyParser(argparse.ArgumentParser):
         sys.exit(2)
 
 '''
-Initialize ze parser!!!
+Initialize!!!
 '''
 parser = MyParser()
+tz = get_localzone()
 
 '''
 Parse CLI arguments
