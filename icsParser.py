@@ -7,6 +7,7 @@ from pytz import UTC # timezone
 import dateutil.parser
 from pprint import pprint
 import argparse
+import re
 
 # Parse CLI arguments
 parser = argparse.ArgumentParser(description='Parse .ics file for calendar')

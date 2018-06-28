@@ -16,6 +16,7 @@ These scripts are created to facilitate logging hours in Jira/Tempo using the py
 * configparser
 * argparse
 * icalendar
+* re
 
 ### Config file
 * config.txt file in this directory containing the following variables:
