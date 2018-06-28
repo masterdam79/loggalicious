@@ -17,7 +17,7 @@ parser.add_argument('-d', '--date-range', nargs=2, metavar=('Start-Date','End-Da
 args = parser.parse_args()
 
 # Make args requited/optional
-if args.ics_path is not None: 
+if args.ics_path is not None:
     ics_path = args.ics_path.strip()
 else:
     print "No value given, exiting, try again.."
@@ -31,7 +31,7 @@ print("File path for .ics file: %s, Starting date: %s, Ending: %s" % (ics_path,d
 ics = open(ics_path,'rb')
 gcal = Calendar.from_ical(ics.read())
 for component in gcal.walk():
-    
+
     if component.name == "VEVENT":
         dtstart = component.decoded('dtstart')
         meeting_date = dtstart.date() if isinstance(dtstart, datetime) else dtstart
@@ -51,6 +51,7 @@ for component in gcal.walk():
                 duration = end - start
 
                 print duration.total_seconds()
+                print(start)
 
             except:
                 print("\n*")
