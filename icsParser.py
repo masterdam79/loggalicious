@@ -27,8 +27,6 @@ Some functions and classes
 # Function to check if jira item exists
 def check_if_exists_jira(jira_item):
     try:
-        jira = JIRA(basic_auth=(jira_user, jira_pass), options = {'server': jira_url})
-
         issue = jira.issue(jira_item)
 
         print(bcolors.UNDERLINE + issue.fields.project.key + bcolors.ENDC)
@@ -60,6 +58,7 @@ Initialize!!!
 '''
 parser = MyParser()
 tz = get_localzone()
+jira = JIRA(basic_auth=(jira_user, jira_pass), options = {'server': jira_url})
 
 '''
 Parse CLI arguments
