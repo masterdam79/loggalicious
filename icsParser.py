@@ -55,13 +55,13 @@ for component in gcal.walk():
         if (date_from <= meeting_date < date_to):
             try:
                 # Put descriptive fields in variables
-                print("\n\n\n\/ New item \/    \/ New item \/")
+                print(bcolors.HEADER + "\n\n\n--------------New item--------------" + bcolors.ENDC)
                 summary = component.decoded('summary')
                 description = component.decoded('description')
-                print("****** Calendar Item content ******")
+                print(bcolors.WARNING + "****** Calendar Item content ******" + bcolors.ENDC)
                 print(summary)
                 print(description)
-                print("****** Calendar Item content ******")
+                print(bcolors.WARNING + "****** Calendar Item content ******" + bcolors.ENDC)
 
                 # Date Time Start
                 dtstart = component.get('dtstart')
@@ -84,24 +84,24 @@ for component in gcal.walk():
                 regex = r"[A-Z]+-[0-9]+"
 
                 if re.search(regex, summary):
-                    print('Found a match in summary!')
+                    print(bcolors.OKBLUE + 'Found a match in summary!' + bcolors.ENDC)
                     jira_key_summary = re.search(regex, summary).group()
-                    print('======matched======')
+                    print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
                     print("KEYS: " + jira_key_summary)
-                    print('======matched======')
+                    print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
 #                    python addWorklog.py --jira_item jira_key_summary --date date --worked duration.total_seconds() + "s" --description description
                 elif re.search(regex, description):
-                    print('Found a match in description!')
+                    print(bcolors.OKBLUE + 'Found a match in description!' + bcolors.ENDC)
                     jira_key_description = re.search(regex, description).group()
-                    print('======matched======')
+                    print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
                     print("KEYS: " + jira_key_description)
-                    print('======matched======')
+                    print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
 #                    python addWorklog.py --jira_item jira_key_summary --date date --worked duration.total_seconds() + "s" --description description
                 else:
-                    print('You\'re not needed go away!')
+                    print(bcolors.FAIL + 'You\'re not needed go away!' + bcolors.ENDC)
 
 
-                print('-------------------------')
+                print(bcolors.HEADER + '-------------------------' + bcolors.ENDC)
 
 
             except:
