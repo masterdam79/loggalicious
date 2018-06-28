@@ -17,7 +17,7 @@ parser.add_argument('-d', '--date-range', nargs=2, metavar=('Start-Date','End-Da
 args = parser.parse_args()
 
 #TODO: Make args requited/optional
-if args.ics_path is not None: 
+if args.ics_path is not None:
     ics_path = args.ics_path.strip()
 else:
     print "No value given, exiting, try again.."
