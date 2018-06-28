@@ -53,6 +53,9 @@ for component in gcal.walk():
                 print duration.total_seconds()
                 print(start)
 
+                # Logic to see if component.get('summary') or component.get('description') contains a JIRA key
+
+
             except:
                 print("\n*")
 
