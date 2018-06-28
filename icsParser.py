@@ -16,14 +16,14 @@ parser.add_argument('-d', '--date-range', nargs=2, metavar=('Start-Date','End-Da
 
 args = parser.parse_args()
 
-#TODO: Make args requited/optional
+# Make args requited/optional
 if args.ics_path is not None: 
     ics_path = args.ics_path.strip()
 else:
     print "No value given, exiting, try again.."
     sys.exit(0)
-date_from = args.date_range[0] if args.date_range is not None else date.today() - timedelta(1)
-date_to = args.date_range[1] if args.date_range is not None else date.today() - timedelta(1)
+date_from = datetime.strptime(args.date_range[0], "%Y-%m-%d").date()  if args.date_range is not None else date.today() # - timedelta(1)
+date_to = datetime.strptime(args.date_range[1], "%Y-%m-%d").date() if args.date_range is not None else date.today() + timedelta(1)
 
 print("File path for .ics file: %s, Starting date: %s, Ending: %s" % (ics_path,date_from,date_to))
 #exit()
@@ -31,18 +31,28 @@ print("File path for .ics file: %s, Starting date: %s, Ending: %s" % (ics_path,d
 ics = open(ics_path,'rb')
 gcal = Calendar.from_ical(ics.read())
 for component in gcal.walk():
-    try:
-        if component.name == "VEVENT":
-            print(component.get('summary'))
-            # Date Time Start
-            dtstart = component.get('dtstart')
-            print dtstart.to_ical()
+    
+    if component.name == "VEVENT":
+        dtstart = component.decoded('dtstart')
+        meeting_date = dtstart.date() if isinstance(dtstart, datetime) else dtstart
+        if (date_from <= meeting_date < date_to):
+            try:
+                #pprint(component)
+                print component.get('summary')
+                # Date Time Start
+                dtstart = component.get('dtstart')
+                #print dtstart.to_ical()
+                start = component.decoded('dtstart')
 
-            # Date Time End
-            dtend = component.get('dtend')
-            print dtend.to_ical()
-            # print(component.get('dtstamp'))
+                # Date Time End
+                dtend = component.get('dtend')
+                #print dtend.to_ical()
+                end = component.decoded('dtend')
+                duration = end - start
 
-    except:
-        print("\n\n\nOops!")
+                print duration.total_seconds()
+
+            except:
+                print("\n*")
+
 ics.close()
