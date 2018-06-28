@@ -49,10 +49,13 @@ for component in gcal.walk():
         if (date_from <= meeting_date < date_to):
             try:
                 # Put descriptive fields in variables
-                summary = component.get('summary')
-                description = component.get('description')
+                print("\n\n\n\/ New item \/    \/ New item \/")
+                summary = component.decoded('summary')
+                description = component.decoded('description')
+                print("****** Calendar Item content ******")
                 print(summary)
                 print(description)
+                print("****** Calendar Item content ******")
 
                 # Date Time Start
                 dtstart = component.get('dtstart')
@@ -72,14 +75,24 @@ for component in gcal.walk():
                 print(date)
 
                 # Define regex to match JIRA keys
-                regexp = re.compile(r'[A-Z]?-[0-9]?')
-                if (regexp.search(summary) or regexp.search(description)):
+                regex = r"[A-Z]*-[0-9]*"
+#                regexp = re.compile(r'[A-Z]*\-[0-9]*', re.MULTILINE)
+#                if (re.search(regex, summary) or re.search(regex, description)):
+                if (re.search(regex, summary) or re.search(regex, description)):
+                    print('found a match!')
+#                if (re.search(regexp, summary) or re.search(regexp, description)):
+                    jira_key_summary = re.search(regex, summary).group()
+#                    jira_key_description = re.search(regex, description).group()
                     print '======matched======'
+                    print("KEYS: " + jira_key_summary)
+#                    print("KEYS: " + jira_key_summary + " - " + jira_key_description)
+                    print '======matched======'
+#                    python addWorklog.py --jira_item jira_key_summary --date date --worked duration.total_seconds() + "s" --description description
 
                 print('-------------------------')
 
 
             except:
-                print("\n*")
+                print("\n")
 
 ics.close()
