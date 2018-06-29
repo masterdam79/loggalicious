@@ -156,6 +156,7 @@ for component in gcal.walk():
         meeting_date = dtstart.date() if isinstance(dtstart, datetime) else dtstart
         if (date_from <= meeting_date < date_to):
             try:
+                status = component.decoded('X-MICROSOFT-CDO-BUSYSTATUS')
                 # Put descriptive fields in variables
                 print(bcolors.HEADER + "\n\n\n--------------New item--------------" + bcolors.ENDC)
                 summary = component.decoded('summary')
@@ -191,7 +192,9 @@ for component in gcal.walk():
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
                     print("KEYS: " + jira_key_from_summary)
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
-                    check_if_exists_jira_and_add_worklog(jira_key_from_summary, date, duration, summary)
+                    jira_item = jira_key_from_summary
+                    if status.lower() == "busy":
+                        check_if_exists_jira_and_add_worklog(jira_item, date, duration, summary)
 #                    python addWorklog.py --jira_item jira_key_from_summary --date date --worked duration.total_seconds() + "s" --description description
                 elif re.search(regex, description):
                     print(bcolors.OKBLUE + 'Found a match in description!' + bcolors.ENDC)
@@ -199,14 +202,14 @@ for component in gcal.walk():
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
                     print("KEYS: " + jira_key_from_description)
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
-                    check_if_exists_jira_and_add_worklog(jira_key_from_description, date, duration, summary)
+                    jira_item = jira_key_from_description
+                    if status.lower() == "busy":
+                        check_if_exists_jira_and_add_worklog(jira_item, date, duration, summary)
 #                    python addWorklog.py --jira_item jira_key_from_summary --date date --worked duration.total_seconds() + "s" --description description
                 else:
-                    print(bcolors.FAIL + 'You\'re not needed go away!' + bcolors.ENDC)
-
+                    print(bcolors.FAIL + 'Julien: "You\'re not needed go away!"' + bcolors.ENDC)
 
                 print(bcolors.HEADER + '-------------------------' + bcolors.ENDC)
-
 
             except:
                 print("\n")
