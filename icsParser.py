@@ -11,6 +11,8 @@ import re
 from jira import JIRA
 import configparser
 from tzlocal import get_localzone
+import urllib2
+import os
 
 '''
 Get some variables outside this script
@@ -64,6 +66,29 @@ def jira_add_worklog(jira_item, date, duration, summary):
     # https://jira.readthedocs.io/en/master/api.html#jira.JIRA.add_worklog
     jira.add_worklog(jira_item, timeSpent=duration_jira_readable, started=datetime_localized, comment=summary)
 
+# Fundtion to download file and display progress bar
+def get_ics_file(url):
+    u = urllib2.urlopen(url)
+    f = open(file_name, 'wb')
+    meta = u.info()
+    file_size = int(meta.getheaders("Content-Length")[0])
+    print "Downloading: %s Bytes: %s" % (file_name, file_size)
+
+    file_size_dl = 0
+    block_sz = 8192
+    while True:
+        buffer = u.read(block_sz)
+        if not buffer:
+            break
+
+        file_size_dl += len(buffer)
+        f.write(buffer)
+        status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
+        status = status + chr(8)*(len(status)+1)
+        print status,
+
+    f.close()
+
 # Class to add some color to the output
 class bcolors:
     HEADER = '\033[95m'
@@ -93,7 +118,7 @@ jira = JIRA(basic_auth=(jira_user, jira_pass), options = {'server': jira_url})
 Parse CLI arguments
 '''
 parser = argparse.ArgumentParser(description='Parse .ics file for calendar')
-parser.add_argument('-f', '--ics_path', type=str, metavar='Ics-File-Path', required=True, help="Path to .ics file")
+parser.add_argument('-f', '--ics_uri', type=str, metavar='Ics-File-URI', required=True, help="URI to .ics file")
 parser.add_argument('-d', '--date-range', nargs=2, metavar=('Start-Date','End-Date'), help='start date and end date in YYYY-MM-DD formating (default: %s, %s)' %(date.today() - timedelta(1), date.today() - timedelta(1)))
 args = parser.parse_args()
 
@@ -101,14 +126,24 @@ args = parser.parse_args()
 date_from = datetime.strptime(args.date_range[0], "%Y-%m-%d").date() if args.date_range is not None else date.today() # - timedelta(1)
 date_to = datetime.strptime(args.date_range[1], "%Y-%m-%d").date() if args.date_range is not None else date.today() + timedelta(1)
 
-# Verbosity
-print("File path for .ics file: %s, Starting date: %s, Ending: %s" % (args.ics_path,date_from,date_to))
-#exit()
+if 'https' in args.ics_uri:
+    file_name = args.ics_uri.split('/')[-1]
+    try:
+        os.remove(file_name)
+    except:
+        print(bcolors.WARNING + "No " + file_name + " file here." + bcolors.ENDC)
+    get_ics_file(args.ics_uri)
+    ics_file = file_name
+else:
+    ics_file = args.ics_uri
 
 '''
 Read the ics file
 '''
-ics = open(args.ics_path,'rb')
+# Verbosity
+print("File path for .ics file: %s, Starting date: %s, Ending: %s" % (ics_file,date_from,date_to))
+#exit()
+ics = open(ics_file,'rb')
 gcal = Calendar.from_ical(ics.read())
 
 '''
