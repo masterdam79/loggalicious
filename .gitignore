@@ -1,2 +1,6 @@
+# Project configuration
+.gitconfig 
+
+# Application Configuration
 config.txt
 calendar.ics
