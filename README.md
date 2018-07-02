@@ -1,17 +1,22 @@
 # Loggalicious
 
 ## Introduction
+
 These scripts are created to facilitate logging hours in Jira/Tempo using the python-jira package.
 
 ## Technology used
+
 * Script: Python
 
 ## Dependencies
+
 ### Linux packages
+
 * python
 * python-pip
 
 ### PIP Install
+
 * jira
 * configparser
 * argparse
@@ -35,5 +40,28 @@ JIRA_ITEM = <key>
 ### How to install on Ubuntu
 ```
 sudo apt update
+
 sudo apt install python python-jira python-configparser python-argparse
+```
+
+## Docker configuration
+
+### Run the following commands: 
+
+```
+docker build -t loggalicious .
+
+docker run -td loggalicious /bin/bash
+
+docker ps 
+
+docker exec -it <container identifier> bash
+
+cd application
+
+python icsParser.py -f <full path to ics file>
+
+(From - To date format) python icsParser.py -f <full path to ics file> -d YYYY-mm-dd YYYY-mm-dd
+
+(From - To date formatexample:) python icsParser.py -f <full path to ics file> -d 2018-06-01 2018-06-30
 ```
