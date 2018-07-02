@@ -24,6 +24,7 @@ These scripts are created to facilitate logging hours in Jira/Tempo using the py
 * re
 
 ### Config file
+
 * config.txt file in this directory containing the following variables:
 
 ```
@@ -36,6 +37,12 @@ JIRA_ITEM = <key>
 ```
 
 **For some reason the config.txt needs a white line on the bottom**
+
+**You can copy the .dist file and edit the configuration**
+
+```
+cp config.txt.dist config.txt 
+```
 
 ### How to install on Ubuntu
 ```
