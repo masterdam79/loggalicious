@@ -41,26 +41,26 @@ JIRA_ITEM = <key>
 **You can copy the .dist file and edit the configuration**
 
 ```
-cp config.txt.dist config.txt 
+cp config.txt.dist config.txt
 ```
 
 ### How to install on Ubuntu
 ```
 sudo apt update
 
-sudo apt install python python-jira python-configparser python-argparse
+sudo apt install python python-jira python-configparser python-argparse python-tzlocal
 ```
 
 ## Docker configuration
 
-### Run the following commands: 
+### Run the following commands:
 
 ```
 docker build -t loggalicious .
 
 docker run -td loggalicious /bin/bash
 
-docker ps 
+docker ps
 
 docker exec -it <container identifier> bash
 
