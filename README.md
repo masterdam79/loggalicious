@@ -56,14 +56,17 @@ sudo apt install python python-jira python-configparser python-argparse python-t
 ### Run the following commands:
 
 ```
-docker build -t loggalicious .
+sudo docker build -t loggalicious .
 
-docker run -td loggalicious /bin/bash
+sudo docker run -td loggalicious /bin/bash
 
-docker ps
+sudo docker ps
 
-docker exec -it <container identifier> bash
+sudo docker exec -it <container identifier> bash
 
+# Or CTID=$(sudo docker ps | grep loggalicious | awk '{print $1}') && sudo docker exec -it ${CTID} bash
+
+# Once inside the container
 cd application
 
 python icsParser.py -f <full path to ics file>
