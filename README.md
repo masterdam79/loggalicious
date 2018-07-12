@@ -60,6 +60,8 @@ sudo docker build -t loggalicious .
 
 sudo docker run -td loggalicious /bin/bash
 
+# If you have resolving issues you can use docker run --add-host <JIRA URL>:<JIRA IP> -td loggalicious /bin/bash
+
 sudo docker ps
 
 sudo docker exec -it <container identifier> bash
