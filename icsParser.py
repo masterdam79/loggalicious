@@ -22,6 +22,7 @@ config.read('./config.txt')
 jira_user = config['BASICAUTH']['JIRA_USER']
 jira_pass = config['BASICAUTH']['JIRA_PASS']
 jira_url = config['BASICAUTH']['JIRA_URL']
+ics_uri = config['OFFICE365']['ICS_URI']
 
 '''
 Some functions and classes
@@ -66,7 +67,7 @@ def jira_add_worklog(jira_item, date, duration, summary):
     # https://jira.readthedocs.io/en/master/api.html#jira.JIRA.add_worklog
     jira.add_worklog(jira_item, timeSpent=duration_jira_readable, started=datetime_localized, comment=summary)
 
-# Fundtion to download file and display progress bar
+# Function to download file and display progress bar
 def get_ics_file(url):
     u = urllib2.urlopen(url)
     f = open(file_name, 'wb')
