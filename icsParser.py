@@ -49,7 +49,7 @@ def check_if_exists_jira_and_add_worklog(jira_item, date, duration, summary):
 
 
 def jira_add_worklog(jira_item, date, duration, summary):
-    print("Inside add_worklog now")
+    print("Inside jira_add_worklog now")
     datetime_type = datetime.strptime(date, '%Y-%m-%d %H:%M')
     datetime_localized = tz.localize(datetime_type)
     if ", " in str(duration):
