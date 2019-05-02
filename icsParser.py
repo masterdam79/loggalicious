@@ -161,7 +161,15 @@ for component in gcal.walk():
                 # Put descriptive fields in variables
                 print(bcolors.HEADER + "\n\n\n--------------New item--------------" + bcolors.ENDC)
                 summary = component.decoded('summary')
-                description = component.decoded('description')
+
+#                print(type(component.get('description')))
+                if component.get('description') is None: # The variable
+                    print('It is None')
+                    description = "No description available"
+                else:
+                    print ("It is defined and has a value")
+                    description = component.decoded('description')
+
                 print(bcolors.WARNING + "****** Calendar Item content ******" + bcolors.ENDC)
                 print(summary)
                 print(description)
