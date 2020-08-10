@@ -1,6 +1,8 @@
 # Project configuration
-.gitconfig 
+.gitconfig
 
 # Application Configuration
 config.txt
+*.bak
+cookiesfile
 calendar.ics
