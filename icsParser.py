@@ -11,8 +11,9 @@ import re
 from jira import JIRA
 import configparser
 from tzlocal import get_localzone
-import urllib2
+import urllib.request
 import os
+import shutil
 
 '''
 Get some variables outside this script
@@ -34,18 +35,20 @@ def check_if_exists_jira_and_add_worklog(jira_item, date, duration, summary):
         print(jira_item)
         print(date)
         print(duration)
-        print(summary)
+        print(str(summary))
         print(bcolors.UNDERLINE + issue.fields.project.key + bcolors.ENDC)
         print(bcolors.UNDERLINE + issue.fields.issuetype.name + bcolors.ENDC)
         print(bcolors.UNDERLINE + issue.fields.reporter.displayName + bcolors.ENDC)
 
         try:
             print("Trying to add worklog")
-            jira_add_worklog(jira_item, date, duration, summary)
-        except:
+            jira_add_worklog(jira_item, date, duration, str(summary))
+        except Exception as e1:
             print(bcolors.FAIL + 'Was unable to add worklog' + bcolors.ENDC)
-    except:
+            print(e1)
+    except Exception as e2:
         print(bcolors.FAIL + 'No valid JIRA key item' + bcolors.ENDC)
+        print(e2)
 
 
 def jira_add_worklog(jira_item, date, duration, summary):
@@ -69,26 +72,9 @@ def jira_add_worklog(jira_item, date, duration, summary):
 
 # Function to download file and display progress bar
 def get_ics_file(url):
-    u = urllib2.urlopen(url)
-    f = open(file_name, 'wb')
-    meta = u.info()
-    file_size = int(meta.getheaders("Content-Length")[0])
-    print "Downloading: %s Bytes: %s" % (file_name, file_size)
-
-    file_size_dl = 0
-    block_sz = 8192
-    while True:
-        buffer = u.read(block_sz)
-        if not buffer:
-            break
-
-        file_size_dl += len(buffer)
-        f.write(buffer)
-        status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
-        status = status + chr(8)*(len(status)+1)
-        print status,
-
-    f.close()
+    # Download the file from `url` and save it locally under `file_name`:
+    with urllib.request.urlopen(url) as response, open(file_name, 'wb') as out_file:
+        shutil.copyfileobj(response, out_file)
 
 # Class to add some color to the output
 class bcolors:
@@ -132,7 +118,7 @@ if 'https' in args.ics_uri:
     try:
         os.remove(file_name)
     except:
-        print(bcolors.WARNING + "No " + file_name + " file here." + bcolors.ENDC)
+        print(bcolors.WARNING + "No " + file_name + " file here to delete." + bcolors.ENDC)
     get_ics_file(args.ics_uri)
     ics_file = file_name
 else:
@@ -186,7 +172,7 @@ for component in gcal.walk():
                 end = component.decoded('dtend')
                 duration = end - start
 
-                print duration.total_seconds()
+                print(duration.total_seconds())
 
                 # Format date for parameter requirement
                 date = str(start)[:16]
@@ -194,29 +180,28 @@ for component in gcal.walk():
 
                 # Define regex to match JIRA keys
                 regex = r"[A-Z]+-[0-9]+"
-
-                if re.search(regex, summary):
+                if re.search(regex, str(summary)):
                     print(bcolors.OKBLUE + 'Found a match in summary!' + bcolors.ENDC)
-                    jira_key_from_summary = re.search(regex, summary).group()
+                    jira_key_from_summary = re.search(regex, str(summary)).group()
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
                     print("KEYS: " + jira_key_from_summary)
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
                     jira_item = jira_key_from_summary
-                    if status.lower() == "busy":
-                        check_if_exists_jira_and_add_worklog(jira_item, date, duration, summary)
+                    if status.lower() == b'busy':
+                        check_if_exists_jira_and_add_worklog(jira_item, date, duration, str(summary))
 #                    python addWorklog.py --jira_item jira_key_from_summary --date date --worked duration.total_seconds() + "s" --description description
-                elif re.search(regex, description):
+                elif re.search(regex, str(description)):
                     print(bcolors.OKBLUE + 'Found a match in description!' + bcolors.ENDC)
-                    jira_key_from_description = re.search(regex, description).group()
+                    jira_key_from_description = re.search(regex, str(description)).group()
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
                     print("KEYS: " + jira_key_from_description)
                     print(bcolors.OKGREEN + '======matched======' + bcolors.ENDC)
                     jira_item = jira_key_from_description
-                    if status.lower() == "busy":
-                        check_if_exists_jira_and_add_worklog(jira_item, date, duration, summary)
+                    if status.lower() == b'busy':
+                        check_if_exists_jira_and_add_worklog(jira_item, date, duration, str(summary))
 #                    python addWorklog.py --jira_item jira_key_from_summary --date date --worked duration.total_seconds() + "s" --description description
                 else:
-                    print(bcolors.FAIL + 'Julien: "You\'re not needed go away!"' + bcolors.ENDC)
+                    print(bcolors.FAIL + 'No regex matched' + bcolors.ENDC)
 
                 print(bcolors.HEADER + '-------------------------' + bcolors.ENDC)
 
